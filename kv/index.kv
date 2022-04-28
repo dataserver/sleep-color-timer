@@ -7,22 +7,30 @@ WindowManager:
         name: "config"
 
 <HomeScreen>:
-    canvas:
-        Color:
-            rgba: root.home_screen_bg_color
-        Rectangle:
-            pos: self.pos
-            size: self.size
+    # canvas:
+    #     Color:
+    #         rgba: root.home_screen_bg_color
+    #     Rectangle:
+    #         pos: self.pos
+    #         size: self.size
     BoxLayout:
         id: root_box_layout
         orientation: "vertical"
         ScrollView:
+            # do_scroll_y: True
             GridLayout:
-                rows: 1
+                cols: 1
                 size_hint_y: None
                 height: self.minimum_height
+                padding: dp(20)
+                MDLabel:
+                    halign: "center"
+                    text: "Custom Automation Project"
+                    font_size: 28
+                    size_hint_y: None
+                    height: 50
                 GridLayout:
-                    rows: 2
+                    cols: 1
                     padding: dp(20)
                     spacing: dp(10)
 
@@ -38,25 +46,16 @@ WindowManager:
                         MDRectangleFlatIconButton:
                             id: btn_power_toggle
                             icon: "power-plug-outline"
-                            text : "Power Switch"
-                            on_press: app.toogle_power_tooggle()
+                            text : "Plug Switch"
+                            on_press: app.plug_tooggle()
                     AnchorLayout:
                         size_hint_y: None
-                        height: btn_turn_off_light.height
+                        height: btn_toggle_light.height
                         MDRectangleFlatIconButton:
-                            id: btn_turn_off_light
-                            icon: ""
-                            text : "Light OFF"
-                            on_press: app.light_turn_off()
-                    AnchorLayout:
-                        size_hint_y: None
-                        height: btn_color_picker.height
-                        MDRectangleFlatIconButton:
-                            id: btn_color_picker
-                            icon: ""
-                            text : "Color Pick"
-                            on_press:
-                                root.open_color_picker()
+                            id: btn_toggle_light
+                            icon: "lightbulb-outline"
+                            text : "Toggle Light"
+                            on_press: app.light_toggle()
                     AnchorLayout:
                         size_hint_y: None
                         height: btn_start_clock.height
@@ -76,14 +75,14 @@ WindowManager:
                             on_press:
                                 root.manager.transition.direction = "left"
                                 root.manager.current = "config"
-                    AnchorLayout:
-                        size_hint_y: None
-                        height: btn_exit.height
-                        MDRectangleFlatIconButton:
-                            id: btn_exit
-                            icon: ""
-                            text : "Exit"
-                            on_press: app.end_app()
+                    # AnchorLayout:
+                    #     size_hint_y: None
+                    #     height: btn_exit.height
+                    #     MDRectangleFlatIconButton:
+                    #         id: btn_exit
+                    #         icon: ""
+                    #         text : "Exit"
+                    #         on_press: app.end_app()
 
 
 <ConfigScreen>:
@@ -138,15 +137,28 @@ WindowManager:
                         max: 100
                         value: 30
 
-                    MDLabel:
-                        text: "Use Tasmota"
-                    MDSwitch:
-                        id: frm_tasmota_power_switch_enabled
+
+                    MDRectangleFlatIconButton:
+                        id: btn_color_picker
+                        icon: "format-color-fill"
+                        text : "Lamp Color"
+                        on_press:
+                            root.open_color_picker()
+                    MDTextField:
+                        id: frm_lamp_color
+                        text: "192.168.15.40"
+                        hint_text: "e.g.: 192.168.15.40"
+                        multiline: False
 
                     MDLabel:
-                        text: "Tasmota Power Switch IP"
+                        text: "Use Plug Switch"
+                    MDSwitch:
+                        id: frm_powerswitch_enabled
+
+                    MDLabel:
+                        text: "Tasmota Plug Switch IP"
                     MDTextField:
-                        id: frm_tasmota_power_switch_ip
+                        id: frm_powerswitch_ip
                         text: "192.168.15.41"
                         hint_text: "e.g.: 192.168.15.41"
                         multiline: False

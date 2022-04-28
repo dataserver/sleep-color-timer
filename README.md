@@ -1,2 +1,6 @@
 # sleep-color-timer
- Kivy project - screen color + smart light + timer
+KivyMD project
+
+- Yeelight - smart light
+- Tasmota - plug switch
+- timer
