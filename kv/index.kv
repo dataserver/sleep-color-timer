@@ -1,0 +1,181 @@
+#:kivy 2.0.0
+
+WindowManager:
+    HomeScreen:
+        name: "home"
+    ConfigScreen:
+        name: "config"
+
+<HomeScreen>:
+    canvas:
+        Color:
+            rgba: root.home_screen_bg_color
+        Rectangle:
+            pos: self.pos
+            size: self.size
+    BoxLayout:
+        id: root_box_layout
+        orientation: "vertical"
+        ScrollView:
+            GridLayout:
+                rows: 1
+                size_hint_y: None
+                height: self.minimum_height
+                GridLayout:
+                    rows: 2
+                    padding: dp(20)
+                    spacing: dp(10)
+
+                    row_default_height: 40
+                    row_force_default: True
+
+                    size_hint_y: None
+                    height: self.minimum_height
+                    # AnchorLayout required for MDbuttons
+                    AnchorLayout:
+                        size_hint_y: None
+                        height: btn_power_toggle.height
+                        MDRectangleFlatIconButton:
+                            id: btn_power_toggle
+                            icon: "power-plug-outline"
+                            text : "Power Switch"
+                            on_press: app.toogle_power_tooggle()
+                    AnchorLayout:
+                        size_hint_y: None
+                        height: btn_turn_off_light.height
+                        MDRectangleFlatIconButton:
+                            id: btn_turn_off_light
+                            icon: ""
+                            text : "Light OFF"
+                            on_press: app.light_turn_off()
+                    AnchorLayout:
+                        size_hint_y: None
+                        height: btn_color_picker.height
+                        MDRectangleFlatIconButton:
+                            id: btn_color_picker
+                            icon: ""
+                            text : "Color Pick"
+                            on_press:
+                                root.open_color_picker()
+                    AnchorLayout:
+                        size_hint_y: None
+                        height: btn_start_clock.height
+                        MDRectangleFlatIconButton:
+                            id: btn_start_clock
+                            icon: "clock-outline" # https://materialdesignicons.com/ https://pictogrammers.github.io/@mdi/font/6.5.95/
+                            text : "Start Clock"
+                            on_press:
+                                app.start_clock()
+                    AnchorLayout:
+                        size_hint_y: None
+                        height: btn_config.height
+                        MDRectangleFlatIconButton:
+                            id: btn_config
+                            icon: ""
+                            text : "Config"
+                            on_press:
+                                root.manager.transition.direction = "left"
+                                root.manager.current = "config"
+                    AnchorLayout:
+                        size_hint_y: None
+                        height: btn_exit.height
+                        MDRectangleFlatIconButton:
+                            id: btn_exit
+                            icon: ""
+                            text : "Exit"
+                            on_press: app.end_app()
+
+
+<ConfigScreen>:
+    # canvas:
+    #     Color:
+    #         rgba: (1, 1, 1, 1)
+    #     Rectangle:
+    #         pos: self.pos
+    #         size: self.size
+
+    BoxLayout:
+        id: root_box_layout
+        orientation: "vertical"
+        ScrollView:
+            do_scroll_y: True
+            GridLayout:
+                cols: 1
+                size_hint_y: None
+                height: self.minimum_height
+                padding: dp(20)
+                MDLabel:
+                    halign: "center"
+                    text: "Settings"
+                    font_size: 28
+                    size_hint_y: None
+                    height: 50
+                GridLayout:
+                    cols: 2
+                    row_default_height: 50
+                    row_force_default: True
+                    size_hint_y: None
+                    height: self.minimum_height
+                    spacing: 0, dp(20)
+                    MDLabel:
+                        text: "Use Yeelight"
+                    MDSwitch:
+                        id: frm_lamp_enabled
+
+                    MDLabel:
+                        text: "Yeelight IP address"
+                    MDTextField:
+                        id: frm_lamp_ip
+                        text: "192.168.15.40"
+                        hint_text: "e.g.: 192.168.15.40"
+                        multiline: False
+
+                    MDLabel:
+                        text: "Yeelight brightness"
+                    MDSlider:
+                        id: frm_lamp_brightness
+                        min: 0
+                        max: 100
+                        value: 30
+
+                    MDLabel:
+                        text: "Use Tasmota"
+                    MDSwitch:
+                        id: frm_tasmota_power_switch_enabled
+
+                    MDLabel:
+                        text: "Tasmota Power Switch IP"
+                    MDTextField:
+                        id: frm_tasmota_power_switch_ip
+                        text: "192.168.15.41"
+                        hint_text: "e.g.: 192.168.15.41"
+                        multiline: False
+
+                    MDLabel:
+                        text: "App Time Out (min)"
+                    MDSlider:
+                        id: frm_app_timeout
+                        min: 0
+                        max: 120
+                        value: 0
+
+                    AnchorLayout:
+                        size_hint_y: None
+                        height: btn_save.height
+                        MDRaisedButton:
+                            id: btn_save
+                            text: "Save"
+                            on_press:
+                                root.form_save()
+                                root.manager.current = "home"
+                                root.manager.transition.direction = "right"
+                    AnchorLayout:
+                        size_hint_y: None
+                        height: btn_cancel.height
+                        MDRectangleFlatButton:
+                            id: btn_cancel
+                            text: "Cancel"
+                            on_press:
+                                root.manager.current = "home"
+                                root.manager.transition.direction = "right"
+
