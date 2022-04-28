@@ -1,6 +1,7 @@
 # sleep-color-timer
-KivyMD project
+
+A simple project using KivyMD to control 2 smart devices. I just wanted set a timer to turn them off after I feel sleep.
 
 - Yeelight - smart light
-- Tasmota - plug switch
-- timer
+- Sonoff Plug (Tasmota firmware) - plug switch
+- timer to turn them OFF
