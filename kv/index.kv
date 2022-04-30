@@ -5,17 +5,10 @@ WindowManager:
         name: "config"
 
 <HomeScreen>:
-    # canvas:
-    #     Color:
-    #         rgba: root.home_screen_bg_color
-    #     Rectangle:
-    #         pos: self.pos
-    #         size: self.size
     BoxLayout:
         id: root_box_layout
         orientation: "vertical"
         ScrollView:
-            # do_scroll_y: True
             GridLayout:
                 cols: 1
                 size_hint_y: None
@@ -73,24 +66,17 @@ WindowManager:
                             on_press:
                                 root.manager.transition.direction = "left"
                                 root.manager.current = "config"
-                    # AnchorLayout:
-                    #     size_hint_y: None
-                    #     height: btn_exit.height
-                    #     MDRectangleFlatIconButton:
-                    #         id: btn_exit
-                    #         icon: ""
-                    #         text : "Exit"
-                    #         on_press: app.end_app()
+                    AnchorLayout:
+                        size_hint_y: None
+                        height: btn_exit.height
+                        MDRectangleFlatIconButton:
+                            id: btn_exit
+                            icon: ""
+                            text : "Exit"
+                            on_press: app.end_app()
 
 
 <ConfigScreen>:
-    # canvas:
-    #     Color:
-    #         rgba: (1, 1, 1, 1)
-    #     Rectangle:
-    #         pos: self.pos
-    #         size: self.size
-
     BoxLayout:
         id: root_box_layout
         orientation: "vertical"
@@ -141,7 +127,6 @@ WindowManager:
                         icon: "format-color-fill"
                         text : "Lamp Color"
                         on_press:
-                            # root.open_color_picker()
                             root.popup_color_selector.open()
                     MDTextField:
                         id: frm_lamp_color
@@ -193,26 +178,25 @@ WindowManager:
 
 <ColorSelectorPopup>:
     color: 1, 1, 1, 1
-    title: 'Color Slector'
+    title: "Color Slector"
     content: content
     BoxLayout:
         id: content
-        orientation: 'vertical'
+        orientation: "vertical"
         ColorPicker:
             id: clr_picker
             color: root.color
             on_color:
                 # on color change
-                # print(self, self.color)
         BoxLayout:
             size_hint_y: None
-            height: '28sp'
+            height: "28sp"
             Button:
-                text: 'Select'
+                text: "Select"
                 on_release:
                     root.color = clr_picker.color
                     app.update_config_frm_lamp_color(root.color)
                     root.dismiss()
             Button:
-                text: 'Cancel'
+                text: "Cancel"
                 on_release: root.dismiss()
