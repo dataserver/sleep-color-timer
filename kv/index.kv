@@ -1,5 +1,3 @@
-#:kivy 2.0.0
-
 WindowManager:
     HomeScreen:
         name: "home"
@@ -22,19 +20,19 @@ WindowManager:
                 cols: 1
                 size_hint_y: None
                 height: self.minimum_height
-                padding: dp(20)
+                padding: sp(20)
                 MDLabel:
                     halign: "center"
                     text: "Custom Automation Project"
-                    font_size: 28
+                    font_size: "28sp"
                     size_hint_y: None
-                    height: 50
+                    height: sp(20)
                 GridLayout:
                     cols: 1
-                    padding: dp(20)
-                    spacing: dp(10)
+                    padding: sp(20)
+                    spacing: sp(10)
 
-                    row_default_height: 40
+                    row_default_height: sp(50)
                     row_force_default: True
 
                     size_hint_y: None
@@ -102,20 +100,20 @@ WindowManager:
                 cols: 1
                 size_hint_y: None
                 height: self.minimum_height
-                padding: dp(20)
+                padding: sp(20)
                 MDLabel:
                     halign: "center"
                     text: "Settings"
-                    font_size: 28
+                    font_size: "28sp"
                     size_hint_y: None
-                    height: 50
+                    height: sp(50)
                 GridLayout:
                     cols: 2
-                    row_default_height: 50
+                    row_default_height: sp(50)
                     row_force_default: True
                     size_hint_y: None
                     height: self.minimum_height
-                    spacing: 0, dp(20)
+                    spacing: 0, sp(20)
                     MDLabel:
                         text: "Use Yeelight"
                     MDSwitch:
@@ -143,7 +141,8 @@ WindowManager:
                         icon: "format-color-fill"
                         text : "Lamp Color"
                         on_press:
-                            root.open_color_picker()
+                            # root.open_color_picker()
+                            root.popup_color_selector.open()
                     MDTextField:
                         id: frm_lamp_color
                         text: "192.168.15.40"
@@ -164,7 +163,8 @@ WindowManager:
                         multiline: False
 
                     MDLabel:
-                        text: "App Time Out (min)"
+                        id: lbl_app_timeout
+                        text: "App Time Out ("+ str(int(frm_app_timeout.value)) +" min)"
                     MDSlider:
                         id: frm_app_timeout
                         min: 0
@@ -191,3 +191,28 @@ WindowManager:
                                 root.manager.current = "home"
                                 root.manager.transition.direction = "right"
 
+<ColorSelectorPopup>:
+    color: 1, 1, 1, 1
+    title: 'Color Slector'
+    content: content
+    BoxLayout:
+        id: content
+        orientation: 'vertical'
+        ColorPicker:
+            id: clr_picker
+            color: root.color
+            on_color:
+                # on color change
+                # print(self, self.color)
+        BoxLayout:
+            size_hint_y: None
+            height: '28sp'
+            Button:
+                text: 'Select'
+                on_release:
+                    root.color = clr_picker.color
+                    app.update_config_frm_lamp_color(root.color)
+                    root.dismiss()
+            Button:
+                text: 'Cancel'
+                on_release: root.dismiss()

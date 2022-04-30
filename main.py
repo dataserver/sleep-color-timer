@@ -1,4 +1,4 @@
-__version__ = "1.0.1"
+__version__ = "1.0.7"
 
 import json
 from typing import Union
@@ -9,31 +9,44 @@ from kivy.core.window import Window
 from kivy.lang import Builder
 from kivy.properties import (ListProperty, ObjectProperty,
                              ReferenceListProperty, StringProperty)
+from kivy.uix.colorpicker import ColorPicker
+from kivy.uix.popup import Popup
 from kivy.uix.screenmanager import Screen, ScreenManager
-from kivy.utils import get_hex_from_color
+from kivy.utils import get_color_from_hex, get_hex_from_color, platform
 from kivymd.app import MDApp
-from kivymd.uix.pickers import MDColorPicker
+# from kivymd.uix.pickers import MDColorPicker
 from sqlitedict import SqliteDict
 
+from config import CFG
 from lightbulb import Lampada
 from smartplug import Tomada
 
-DB_FILE_NAME = "data.sqlite3"
-DB_TABLE_CONFIG_NAME = "configs"
+# add the following just under the imports
+if platform == "android":
+    from android.permissions import Permission, request_permissions
+    request_permissions([Permission.INTERNET,Permission.READ_EXTERNAL_STORAGE,Permission.WRITE_EXTERNAL_STORAGE])
 
 class WindowManager(ScreenManager):
     pass
 
-
 class HomeScreen(Screen):
     # home_screen_bg_color = ListProperty([0, 0, 0, 1])
+    my_font_size = ObjectProperty()
     pass
 
-class ConfigScreen(Screen):
-    def on_enter(self, *args):
-        self.form_populate()
+class ColorSelectorPopup(Popup):
+    pass
 
-    def form_populate(self):
+
+class ConfigScreen(Screen):
+
+    def on_enter(self, *args) -> None:
+        cfgs =  App.get_running_app().my_app_cfgs
+        self.form_populate()
+        self.popup_color_selector = ColorSelectorPopup()
+        self.popup_color_selector.color = get_color_from_hex(cfgs["lamp_color"])
+
+    def form_populate(self) -> None:
         cfgs =  App.get_running_app().my_app_cfgs
         manager = App.get_running_app().root
         manager.get_screen("config").ids.frm_lamp_enabled.active = cfgs["lamp_enabled"]
@@ -44,7 +57,7 @@ class ConfigScreen(Screen):
         manager.get_screen("config").ids.frm_powerswitch_ip.value = cfgs["powerswitch_ip"]
         manager.get_screen("config").ids.frm_app_timeout.value = cfgs["app_timeout"]
 
-    def form_save(self):
+    def form_save(self) -> None:
         manager = App.get_running_app().root
         cfgs = {
             "lamp_enabled" :manager.get_screen("config").ids.frm_lamp_enabled.active,
@@ -58,34 +71,9 @@ class ConfigScreen(Screen):
         App.get_running_app().update_config_db(new_cfgs=cfgs)
 
 
-    def open_color_picker(self):
-        color_picker = MDColorPicker(size_hint=(0.45, 0.85))
-        color_picker.open()
-        color_picker.bind(
-            on_select_color=self.on_select_color,
-            on_release=self.get_selected_color,
-        )
-
-    # def update_color(self, color: list) -> None:
-    def update_color(self, rgb_color: str) -> None:
-        manager = App.get_running_app().root
-        manager.get_screen("config").ids.frm_lamp_color.text = rgb_color
 
 
-    def get_selected_color(
-                            self,
-                            instance_color_picker: MDColorPicker,
-                            type_color: str,
-                            selected_color: Union[list, str],
-                        ):
-        self.update_color(rgb_color=get_hex_from_color(selected_color))
-        # self.update_color(selected_color[:-1] + [1])
-        instance_color_picker.dismiss()
 
-
-    def on_select_color(self, instance_gradient_tab, color: list) -> None:
-        """Called when a gradient image is clicked."""
-        pass
 
 
 class MyApp(MDApp):
@@ -107,7 +95,7 @@ class MyApp(MDApp):
         pass
 
     def build(self):
-        Window.size = (400,600)
+        # Window.size = (400,600)
         self.title = "Sleep Color Switch App"
         self.theme_cls.theme_style = "Dark"
         self.theme_cls.primary_palette = "Purple"
@@ -120,7 +108,7 @@ class MyApp(MDApp):
         self.lampada = Lampada(enabled=self.my_app_cfgs["lamp_enabled"], ip=self.my_app_cfgs["lamp_ip"])
         self.lampada.brightness = self.my_app_cfgs["lamp_brightness"]
         self.tomada = Tomada(enabled=self.my_app_cfgs["powerswitch_enabled"], ip=self.my_app_cfgs["powerswitch_ip"])
-        # self.my_app_cfgs["powerswitch_enabled"] = self.power_switch.is_enabled
+        # self.my_app_cfgs["powerswitch_enabled"] = self.tomada.is_enabled
 
         self.update_config_db()
 
@@ -135,7 +123,7 @@ class MyApp(MDApp):
                 "powerswitch_ip" : "192.168.15.41",
                 "app_timeout" : 0,
             }
-        with SqliteDict(DB_FILE_NAME, tablename=DB_TABLE_CONFIG_NAME, encode=json.dumps, decode=json.loads) as db:
+        with SqliteDict(CFG["DB_FILE_NAME"], tablename=CFG["DB_TABLE_CONFIG_NAME"], encode=json.dumps, decode=json.loads) as db:
             for k in cfgs:
                 if k in db:
                     cfgs[k] = db[k]
@@ -147,7 +135,7 @@ class MyApp(MDApp):
     def update_config_db(self, new_cfgs = {}) -> None:
         if len(new_cfgs) == 0:
             new_cfgs = self.my_app_cfgs
-        with SqliteDict(DB_FILE_NAME, tablename=DB_TABLE_CONFIG_NAME, encode=json.dumps, decode=json.loads) as db:
+        with SqliteDict(CFG["DB_FILE_NAME"], tablename=CFG["DB_TABLE_CONFIG_NAME"], encode=json.dumps, decode=json.loads) as db:
             for k in new_cfgs:
                 db[k] = new_cfgs[k]
             db.commit()
@@ -167,6 +155,12 @@ class MyApp(MDApp):
         self.lampada.brightness = self.my_app_cfgs["lamp_brightness"]
         self.lampada.color = self.my_app_cfgs["lamp_color"]
 
+    # config > form > colorpick
+    # def update_color(self, color: list) -> None:
+    def update_config_frm_lamp_color(self, color: tuple) -> None:
+        rgb_color = get_hex_from_color(color)
+        manager = App.get_running_app().root
+        manager.get_screen("config").ids.frm_lamp_color.text = rgb_color
 
     # plug switch
     def plug_tooggle(self) -> None:
@@ -206,7 +200,7 @@ class MyApp(MDApp):
     def start_clock(self) -> None:
         app_timeout = 0
         manager = App.get_running_app().root
-        with SqliteDict(DB_FILE_NAME, tablename=DB_TABLE_CONFIG_NAME, encode=json.dumps, decode=json.loads) as db:
+        with SqliteDict(CFG["DB_FILE_NAME"], tablename=CFG["DB_TABLE_CONFIG_NAME"], encode=json.dumps, decode=json.loads) as db:
             app_timeout = db["app_timeout"]
 
         if app_timeout > 0:
