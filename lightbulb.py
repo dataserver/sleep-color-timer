@@ -23,7 +23,6 @@ class Lampada:
                 self._is_on = True if p["power"] == "on" else False
                 self._is_available = True
         except Exception as e:
-            # print("lamp not available")
             self._is_available = False
 
     def _hex_to_rgb(self, hex_string) -> dict[str, int]:
@@ -64,7 +63,6 @@ class Lampada:
         if self._is_available:
             self._bulb.toggle()
             props = self._bulb.get_properties()
-            # print("get_properties", props)
             self._is_on = True if props["power"] == "on" else False
 
     @property
@@ -80,8 +78,6 @@ class Lampada:
         self._color = value
         rgb = self._hex_to_rgb(value)
         if self._is_available:
-            # if self._is_on is not True:
-            #     self.turn_on()
             self._bulb.set_rgb(rgb["red"], rgb["green"], rgb["blue"])
 
     @property
@@ -92,6 +88,5 @@ class Lampada:
     def brightness(self, value: int) -> None:
         self._brightness = value
         if self._is_available:
-            # if self._is_on:
             self._bulb.set_brightness(value)
 
