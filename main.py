@@ -14,7 +14,6 @@ from kivy.uix.popup import Popup
 from kivy.uix.screenmanager import Screen, ScreenManager
 from kivy.utils import get_color_from_hex, get_hex_from_color, platform
 from kivymd.app import MDApp
-# from kivymd.uix.pickers import MDColorPicker
 from sqlitedict import SqliteDict
 
 from config import CFG
