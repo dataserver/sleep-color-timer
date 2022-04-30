@@ -1,8 +1,7 @@
-# import requests
 from thttp import request
 
 """
-https://tasmota.github.io/docs/F
+https://tasmota.github.io/docs/
 """
 class Tomada:
     def __init__(self, enabled, ip) -> None:
@@ -44,27 +43,6 @@ class Tomada:
             r = self._make_request(f"cmnd=Power%20TOGGLE")
             self._is_on = True if r["POWER"]=="ON" else False
 
-    # requests version
-    # def _make_request_bkp(self, query_string:str) -> dict[str, object]:
-    #  type hinting 3.8 vs 3.9 sucks for dict
-    #  v3.8
-    #  from typing import Dict
-    #  Dict[str, str]
-    #  v3.9
-    #  from typing import Dict
-    #  dict[str, str]
-    #     try :
-    #         r = requests.get(f"http://{self.ip}/cm?{query_string}", timeout=1)
-    #         if r.status_code == 200:
-    #             return r.json()
-    #     except requests.exceptions.JSONDecodeError:
-    #         print('response is not json')
-    #         self._is_available  = False
-    #     except requests.exceptions.Timeout:
-    #         print('response time out')
-    #         self._is_available  = False
-    #     return None
-    # thttp.py version
     def _make_request(self, query_string:str):
         try :
             r = request(f"http://{self.ip}/cm?{query_string}", timeout=1, verify=False)
