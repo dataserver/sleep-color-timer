@@ -5,6 +5,8 @@ from yeelight import Bulb, discover_bulbs
 """
 https://yeelight.readthedocs.io/en/latest/index.html
 """
+
+
 class Lampada:
     def __init__(self, enabled, ip) -> None:
         self._is_enabled: bool = enabled
@@ -41,7 +43,6 @@ class Lampada:
             "green": int(g_hex, 16),
             "blue": int(b_hex, 16),
         }
-
 
     def enable(self) -> None:
         self._is_enabled = True
@@ -89,4 +90,3 @@ class Lampada:
         self._brightness = value
         if self._is_available:
             self._bulb.set_brightness(value)
-
